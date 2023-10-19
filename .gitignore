@@ -1,0 +1,10 @@
+# Python garbage
+__pycache__
+
+# Test and Coverage
+.coverage
+.hypothesis
+*.py,cover
+.pytest_cache
+coverage.lcov
+htmlcov

@@ -1,0 +1,29 @@
+digraph snews_data_model {
+    // rankdir=LR;
+    node [shape=record, fontname="JetBrains Mono", fontsize=11, width=2];
+    graph []
+
+    // Nodes
+    // SNEWS datat models
+    snews_exp [label="SNEWS Member\nExperiment"];
+    exp_detectors [label="Detector(s)"];
+    neutrino_obs [label="Neutrino\nObservation"];
+    snews_coin [label="SNEWS Coincidence"];
+    snews_alert [label="SNEWS Alert"]
+
+    // Non-SNEWS data models
+    exp_message [label="Exp. Observation"];
+
+
+    // Edges
+    exp_detectors -> neutrino_obs;
+    neutrino_obs -> snews_exp;
+    snews_exp -> exp_message;
+    exp_message -> snews_coin;
+    snews_coin -> snews_alert;
+
+
+    // Ranks
+    // { rank=same; neutrino_obs; snews_exp;}
+    // { rank=same; neutrino_obs;}
+}

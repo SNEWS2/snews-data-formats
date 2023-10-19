@@ -1,0 +1,22 @@
+[
+    {
+        "id": 1,
+        "name": "Super-K",
+        "name_full": "Super-Kamiokande",
+        "type": "Water Cerenkov",
+        "experiment": "Super-Kamiokande",
+        "mass_kt": 30,
+        "depth_meters": 2700,
+        "depth_mwe": 1200,
+        "latitude": 37.7749,
+        "longitude": -122.4194,
+        "facility": "kamioka",
+        "city": "San Francisco",
+        "region": "CA",
+        "country": "US",
+        "website": "http://www-sk.icrr.u-tokyo.ac.jp/sk/index-e.html",
+        "logo": "http://www-sk.icrr.u-tokyo.ac.jp/sk/images/sk_logo.gif",
+        "snews_member_status": true,
+        "snews_member_since": "2014-01-01"
+    }
+]

@@ -1,0 +1,127 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "schema_author": "Supernova Early Warning System (SNEWS)",
+  "schema_version": "0.1a",
+  "$defs": {
+    "SNEWSMessageTier": {
+      "enum": [
+        "Heartbeat",
+        "Retraction",
+        "TimeTier",
+        "SigTier",
+        "CoincidenceTier"
+      ],
+      "title": "SNEWSMessageTier",
+      "type": "string"
+    }
+  },
+  "properties": {
+    "id_": {
+      "default": null,
+      "description": "Textual identifier for the message",
+      "title": "Id ",
+      "type": "string"
+    },
+    "uid": {
+      "description": "Unique identifier for the message",
+      "format": "uuid4",
+      "title": "Uid",
+      "type": "string"
+    },
+    "detector_name": {
+      "default": null,
+      "description": "Name of the detector that sent the message",
+      "title": "Detector Name",
+      "type": "string"
+    },
+    "tier": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/SNEWSMessageTier"
+        }
+      ],
+      "description": "Message tier",
+      "title": "Message Tier"
+    },
+    "sent_time_utc": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Time the message was sent in ISO format",
+      "title": "Sent Time Utc"
+    },
+    "machine_time_utc": {
+      "description": "Time of the event at the detector in ISO format",
+      "title": "Machine Time Utc",
+      "type": "string"
+    },
+    "is_pre_sn": {
+      "default": false,
+      "description": "True if the message is a pre-SN alert",
+      "title": "Is Pre Sn",
+      "type": "boolean"
+    },
+    "is_test": {
+      "default": false,
+      "description": "True if the message is a test alert",
+      "title": "Is Test",
+      "type": "boolean"
+    },
+    "is_firedrill": {
+      "default": false,
+      "description": "True if the message is a fire drill alert",
+      "title": "Is Firedrill",
+      "type": "boolean"
+    },
+    "meta": {
+      "anyOf": [
+        {
+          "type": "object"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Attached metadata",
+      "title": "Meta"
+    },
+    "schema_version": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": "0.1a",
+      "description": "Schema version of the message",
+      "title": "Schema Version"
+    },
+    "retract_latest": {
+      "description": "True if the latest message is being retracted",
+      "title": "Retract Latest",
+      "type": "boolean"
+    },
+    "retraction_reason": {
+      "description": "Reason for retraction",
+      "title": "Retraction Reason",
+      "type": "string"
+    }
+  },
+  "required": [
+    "tier",
+    "machine_time_utc",
+    "retract_latest",
+    "retraction_reason"
+  ],
+  "title": "SNEWSMessageRetractionModel",
+  "type": "object"
+}
