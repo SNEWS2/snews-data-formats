@@ -13,13 +13,17 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
-          python-version: [3.9, 3.10, 3.11, 3.12]
+          python-version:
+            -3.9
+            -3.10
+            -3.11
+            -3.12
 
       - name: Install dependencies
         run: |
-          sudo apt update --yes && sudo apt install --yes git build-essential pandoc curl graphviz
+          sudo apt update --yes && sudo apt install --yes git build-essential graphviz
           pip install poetry
           poetry install
 
-      - name: Build
-        run: poetry run make html SPHINXOPTS="-W --keep-going -n --color -j auto"
+      - name: Test
+        run: poetry run pytest
