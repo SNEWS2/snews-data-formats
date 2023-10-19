@@ -1,4 +1,18 @@
 # -*- coding: utf-8 -*-
+"""SNEWS Data Services - Data
+
+This module provides an interface to static data contained in JSON files in the ``data`` directory.
+
+The data registry (`SNEWSDataRegistry`) is responsible for importing the JSON files and storing the
+data in memory based on a label-model mapping. The label corresponds to the base name of the JSON
+file and the model is the Pydantic model used to validate those data.
+
+Interfaces for specific data types are provided (e.g., the `SNEWSDetectorData` class) to provide
+convenience methods for accessing the data.
+
+Todo:
+    * Make the Data Registry a singleton?
+"""
 
 # Standard library modules
 import json
