@@ -1,0 +1,161 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "schema_author": "Supernova Early Warning System (SNEWS)",
+  "schema_version": "1a",
+  "$defs": {
+    "Tier": {
+      "enum": [
+        "Heartbeat",
+        "Retraction",
+        "TimingTier",
+        "SignificanceTier",
+        "CoincidenceTier"
+      ],
+      "title": "Tier",
+      "type": "string"
+    }
+  },
+  "description": "Heartbeat detector message.",
+  "properties": {
+    "id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Textual identifier for the message",
+      "title": "Human-readable message ID"
+    },
+    "uid": {
+      "description": "Unique identifier for the message",
+      "format": "uuid4",
+      "title": "Unique message ID",
+      "type": "string"
+    },
+    "tier": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/Tier"
+        }
+      ],
+      "description": "Message tier",
+      "title": "Message Tier"
+    },
+    "sent_time_utc": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Time the message was sent in ISO 8601-1:2019 format",
+      "title": "Sent time (UTC)"
+    },
+    "machine_time_utc": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Time of the event at the detector in ISO 8601-1:2019 format",
+      "title": "Machine time (UTC)"
+    },
+    "is_pre_sn": {
+      "anyOf": [
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": false,
+      "description": "True if the message is associated with pre-SN",
+      "title": "Pre-SN Flag"
+    },
+    "is_test": {
+      "anyOf": [
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": false,
+      "description": "True if the message is a test",
+      "title": "Test Flag"
+    },
+    "is_firedrill": {
+      "anyOf": [
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": false,
+      "description": "True if the message is associated with a fire drill",
+      "title": "Fire Drill Flag"
+    },
+    "meta": {
+      "anyOf": [
+        {
+          "type": "object"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Attached metadata",
+      "title": "Metadata"
+    },
+    "schema_version": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": "1a",
+      "description": "Schema version of the message",
+      "title": "Schema Version"
+    },
+    "detector_name": {
+      "description": "Name of the detector that sent the message",
+      "title": "Detector Name",
+      "type": "string"
+    },
+    "detector_status": {
+      "description": "Status of the detector",
+      "examples": [
+        "ON",
+        "OFF"
+      ],
+      "title": "Detector Status",
+      "type": "string"
+    }
+  },
+  "required": [
+    "tier",
+    "detector_name",
+    "detector_status"
+  ],
+  "title": "HeartBeat",
+  "type": "object"
+}

@@ -1,0 +1,164 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "schema_author": "Supernova Early Warning System (SNEWS)",
+  "schema_version": "0.1a",
+  "$defs": {
+    "Tier": {
+      "enum": [
+        "Heartbeat",
+        "Retraction",
+        "TimeTier",
+        "SigTier",
+        "CoincidenceTier"
+      ],
+      "title": "Tier",
+      "type": "string"
+    }
+  },
+  "properties": {
+    "id": {
+      "default": null,
+      "description": "Textual identifier for the message",
+      "title": "Human-readable message ID",
+      "type": "string"
+    },
+    "uid": {
+      "description": "Unique identifier for the message",
+      "format": "uuid4",
+      "title": "Unique message ID",
+      "type": "string"
+    },
+    "tier": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/Tier"
+        }
+      ],
+      "description": "Message tier",
+      "title": "Message Tier"
+    },
+    "sent_time_utc": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Time the message was sent in ISO format",
+      "title": "Sent Time Utc"
+    },
+    "expiration_time_utc": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Time the message expires in ISO format",
+      "title": "Expiration Time (UTC)"
+    },
+    "machine_time_utc": {
+      "description": "Time of the event at the detector in ISO format",
+      "title": "Machine Time Utc",
+      "type": "string"
+    },
+    "is_pre_sn": {
+      "anyOf": [
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": false,
+      "description": "True if the message is associated with pre-SN",
+      "title": "Pre-SN Flag"
+    },
+    "is_test": {
+      "anyOf": [
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": false,
+      "description": "True if the message is a test",
+      "title": "Test Flag"
+    },
+    "is_firedrill": {
+      "anyOf": [
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": false,
+      "description": "True if the message is associated with a fire drill",
+      "title": "Fire Drill Flag"
+    },
+    "meta": {
+      "anyOf": [
+        {
+          "type": "object"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Attached metadata",
+      "title": "Metadata"
+    },
+    "schema_version": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": "0.1a",
+      "description": "Schema version of the message",
+      "title": "Schema Version"
+    },
+    "detector_name": {
+      "default": null,
+      "description": "Name of the detector that sent the message",
+      "title": "Detector Name",
+      "type": "string"
+    },
+    "neutrino_time_utc": {
+      "description": "Time of the first neutrino in the event in ISO format",
+      "title": "Neutrino Time Utc",
+      "type": "string"
+    },
+    "timing_series": {
+      "description": "Timing series of the event",
+      "items": {
+        "type": "string"
+      },
+      "title": "Timing Series",
+      "type": "array"
+    }
+  },
+  "required": [
+    "tier",
+    "machine_time_utc",
+    "neutrino_time_utc",
+    "timing_series"
+  ],
+  "title": "TimeTierMessage",
+  "type": "object"
+}

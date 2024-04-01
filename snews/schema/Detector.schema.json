@@ -1,0 +1,184 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "schema_author": "Supernova Early Warning System (SNEWS)",
+  "schema_version": "1a",
+  "$defs": {
+    "DetectorType": {
+      "enum": [
+        "Water Cerenkov",
+        "Liquid Scintillator",
+        "Liquid Argon",
+        "Bubble Chamber",
+        "High-Z",
+        "Other"
+      ],
+      "title": "DetectorType",
+      "type": "string"
+    }
+  },
+  "properties": {
+    "id": {
+      "description": "Unique identifier for the detector",
+      "title": "Id",
+      "type": "integer"
+    },
+    "name": {
+      "description": "Common name of the detector",
+      "title": "Name",
+      "type": "string"
+    },
+    "name_full": {
+      "description": "Full name of the detector",
+      "title": "Name Full",
+      "type": "string"
+    },
+    "type": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/DetectorType"
+        }
+      ],
+      "description": "Type of detector"
+    },
+    "experiment": {
+      "description": "Name of neutrino experiment",
+      "title": "Experiment",
+      "type": "string"
+    },
+    "mass_kt": {
+      "description": "Detector mass",
+      "minimum": 0.0,
+      "title": "Mass Kt",
+      "type": "number"
+    },
+    "depth_meters": {
+      "description": "Detector depth in meters",
+      "minimum": 0.0,
+      "title": "Depth Meters",
+      "type": "number"
+    },
+    "depth_mwe": {
+      "description": "Detector depth in meters-water-equivalent",
+      "minimum": 0.0,
+      "title": "Depth Mwe",
+      "type": "number"
+    },
+    "facility": {
+      "description": "Name of facility where detector is located",
+      "title": "Facility",
+      "type": "string"
+    },
+    "latitude": {
+      "description": "Latitude of detector",
+      "maximum": 90.0,
+      "minimum": -90.0,
+      "title": "Latitude",
+      "type": "number"
+    },
+    "longitude": {
+      "description": "Longitude of detector",
+      "maximum": 180.0,
+      "minimum": -180.0,
+      "title": "Longitude",
+      "type": "number"
+    },
+    "city": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "City where detector is located",
+      "title": "City"
+    },
+    "region": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "State/province/region where detector is located",
+      "title": "Region"
+    },
+    "country": {
+      "description": "Country where detector is located",
+      "pattern": "^\\w{2}$",
+      "title": "Country",
+      "type": "string"
+    },
+    "website": {
+      "anyOf": [
+        {
+          "format": "uri",
+          "minLength": 1,
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Experiment website",
+      "title": "Website"
+    },
+    "logo": {
+      "anyOf": [
+        {
+          "format": "uri",
+          "minLength": 1,
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Experiment logo",
+      "title": "Logo"
+    },
+    "snews_member_status": {
+      "default": false,
+      "description": "Whether detector is a member of SNEWS",
+      "title": "Snews Member Status",
+      "type": "boolean"
+    },
+    "snews_member_since": {
+      "anyOf": [
+        {
+          "format": "date",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Date when detector joined SNEWS",
+      "title": "Snews Member Since"
+    }
+  },
+  "required": [
+    "id",
+    "name",
+    "name_full",
+    "type",
+    "experiment",
+    "mass_kt",
+    "depth_meters",
+    "depth_mwe",
+    "facility",
+    "latitude",
+    "longitude",
+    "country"
+  ],
+  "title": "Detector",
+  "type": "object"
+}

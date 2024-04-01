@@ -1,0 +1,64 @@
+site_name: SNEWS Data Formats
+
+theme:
+  name: material
+  features:
+    - search.suggest
+    - search.highlight
+  icon:
+    repo: fontawesome/brands/github
+  palette:
+
+    # Palette toggle for light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+      primary: blue-grey
+      accent: indigo
+
+    # Palette toggle for dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      toggle:
+        icon: material/brightness-4
+        name: Switch to system preference
+      primary: black
+      accent: green
+
+extra:
+  homepage: https://github.com/snews/snews-data-formats
+  version:
+    provider: mike
+
+markdown_extensions:
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences
+
+plugins:
+  - search
+  - offline
+  - section-index
+
+repo_url: https://github.com/snews/snews-data-formats
+
+nav:
+  - Home: index.md
+  - Quickstart: quickstart.md
+  - Development: development.md
+  - Data Specifications:
+    - spec/index.md
+    - Timing: "spec/timing.md"
+    - Detectors: "spec/detectors.md"
+    - SNEWS Messages: "spec/messages.md"
+    - NASA GCN Notices: "spec/gcn.md"
+  - Data Products:
+    - data/index.md
+    - Leap Years: "data/leap-years.md"
+    - Detectors: "data/detectors.md"

@@ -1,0 +1,20 @@
+{
+    "id": 1,
+    "name": "Super-K",
+    "name_full": "Super-Kamiokande",
+    "type": "Water Cerenkov",
+    "experiment": "Super-Kamiokande",
+    "mass_kt": 30,
+    "depth_meters": 1000,
+    "depth_mwe": 0,
+    "latitude": 36.4256,
+    "longitude": -137.3103,
+    "facility": "Kamioka Observatory",
+    "city": "Hida",
+    "region": "Gifu",
+    "country": "JP",
+    "website": "http://www-sk.icrr.u-tokyo.ac.jp/sk/index-e.html",
+    "logo": "http://www-sk.icrr.u-tokyo.ac.jp/sk/images/sk_logo.gif",
+    "snews_member_status": true,
+    "snews_member_since": "2014-01-01"
+}
