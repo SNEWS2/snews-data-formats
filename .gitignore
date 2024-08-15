@@ -8,3 +8,6 @@ __pycache__
 .pytest_cache
 coverage.lcov
 htmlcov
+
+# Build stuff
+dist
