@@ -2,9 +2,11 @@
 name = "snews-data-formats"
 version = "1.0.0a"
 description = "A unified collection of SNEWS data, models, and schema"
-authors = ["Justin Vasel <justin.vasel@gmail.com>"]
+authors = ["SNEWS Collaboration <snews2.0@lists.bnl.gov>"]
+maintainers = ["Justin Vasel <justin.vasel@gmail.com>"]
 license = "BSD 3-Clause"
 readme = "README.md"
+repository = "https://github.com/SNEWS2/snews-data-formats"
 packages = [{include = "snews"}]
 
 
