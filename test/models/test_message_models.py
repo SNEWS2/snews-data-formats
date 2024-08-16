@@ -10,9 +10,9 @@ from hypothesis import given
 
 # Local modules
 from snews.data import detectors
-from snews.models.messages import (CoincidenceTierMessage, HeartBeat,
-                                   Retraction, SignificanceTierMessage, Tier,
-                                   TimingTierMessage)
+from snews.models.messages import (CoincidenceTierMessage, HeartbeatMessage,
+                                   RetractionMessage, SignificanceTierMessage,
+                                   Tier, TimingTierMessage)
 
 # STRATEGIES ======================================================================================
 
@@ -64,12 +64,13 @@ strategy_required_fields_heartbeat = {
 # Retraction message
 strategy_required_fields_retraction = {
     **strategy_required_fields_base,
-    "retract_message_uid": st.uuids(version=4),
+    "retract_message_uid": st.uuids(version=4).map(lambda x: str(x)),
     "retraction_reason": st.text(min_size=1),
 }
 
 
 # TESTS ===========================================================================================
+
 
 # Timing Tier Test
 @given(**strategy_required_fields_tier_timing)
@@ -83,7 +84,9 @@ def test_snews_message_model_timing_tier_invalid_timing_series(**kwargs):
         msg = TimingTierMessage(**kwargs)
         msg.timing_series = ["1987-02-24T05:31:00Z", "Feb 24, 1987 5:31 AM UTC"]
 
-    assert "Timing series entries must be in ISO 8601-1:2019 format" in str(exc_info.value)
+    assert "Timing series entries must be in ISO 8601-1:2019 format" in str(
+        exc_info.value
+    )
 
 
 # Significance Tier Test
@@ -127,17 +130,16 @@ def test_snews_message_model_coincidence_tier_nu_time_in_future(**kwargs):
     assert "neutrino_time_utc must be in the past" in str(exc_info.value)
 
 
-# Heartbeat Test
+# Heartbeat Tests
 @given(**strategy_required_fields_heartbeat)
 def test_snews_message_model_heartbeat_required(**kwargs):
-    HeartBeat(**kwargs)
+    HeartbeatMessage(**kwargs)
 
 
-# Heartbeat Test
 @given(**strategy_required_fields_heartbeat)
 def test_snews_message_model_heartbeat_invalid_detector(**kwargs):
     with pytest.raises(ValueError) as exc_info:
-        msg = HeartBeat(**kwargs)
+        msg = HeartbeatMessage(**kwargs)
         msg.is_test = False
         msg.detector_name = "Super-Duper-K"
 
@@ -147,33 +149,37 @@ def test_snews_message_model_heartbeat_invalid_detector(**kwargs):
 @given(**strategy_required_fields_heartbeat)
 def test_snews_message_model_heartbeat_invalid_detector_status(**kwargs):
     with pytest.raises(ValueError) as exc_info:
-        msg = HeartBeat(**kwargs)
+        msg = HeartbeatMessage(**kwargs)
         msg.detector_status = "OK"
 
     assert "Detector status must be either ON or OFF" in str(exc_info.value)
 
 
-# Retraction Test
+# Retraction Tests
 @given(**strategy_required_fields_retraction)
 def test_snews_message_model_retraction_required(**kwargs):
-    Retraction(**kwargs)
+    RetractionMessage(**kwargs)
 
 
 @given(**strategy_required_fields_retraction)
 def test_snews_message_model_retraction_validation_both_indicators(**kwargs):
     with pytest.raises(ValueError) as exc_info:
-        msg = Retraction(**kwargs)
+        msg = RetractionMessage(**kwargs)
         msg.retract_latest = True
         msg.retract_message_uid = "1234567890"
 
-    assert "retract_message_uid cannot be specified when retract_latest=True" in str(exc_info.value)
+    assert "retract_message_uuid cannot be specified when retract_latest=True" in str(
+        exc_info.value
+    )
 
 
 @given(**strategy_required_fields_retraction)
 def test_snews_message_model_retraction_validation_neither_indicator(**kwargs):
     with pytest.raises(ValueError) as exc_info:
-        msg = Retraction(**kwargs)
+        msg = RetractionMessage(**kwargs)
         msg.retract_latest = False
         msg.retract_message_uid = None
 
-    assert "Must specify either retract_message_uid or retract_latest=True" in str(exc_info.value)
+    assert "Must specify either retract_message_uuid or retract_latest=True" in str(
+        exc_info.value
+    )

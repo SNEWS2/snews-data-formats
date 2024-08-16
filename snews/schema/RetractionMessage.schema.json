@@ -1,30 +1,37 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "schema_author": "Supernova Early Warning System (SNEWS)",
-  "schema_version": "0.1a",
+  "schema_version": "0.1",
   "$defs": {
     "Tier": {
       "enum": [
         "Heartbeat",
         "Retraction",
-        "TimeTier",
-        "SigTier",
+        "TimingTier",
+        "SignificanceTier",
         "CoincidenceTier"
       ],
       "title": "Tier",
       "type": "string"
     }
   },
+  "description": "Retraction detector message.",
   "properties": {
     "id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
       "default": null,
       "description": "Textual identifier for the message",
-      "title": "Human-readable message ID",
-      "type": "string"
+      "title": "Human-readable message ID"
     },
-    "uid": {
+    "uuid": {
       "description": "Unique identifier for the message",
-      "format": "uuid4",
       "title": "Unique message ID",
       "type": "string"
     },
@@ -47,10 +54,10 @@
         }
       ],
       "default": null,
-      "description": "Time the message was sent in ISO format",
-      "title": "Sent Time Utc"
+      "description": "Time the message was sent in ISO 8601-1:2019 format",
+      "title": "Sent time (UTC)"
     },
-    "expiration_time_utc": {
+    "machine_time_utc": {
       "anyOf": [
         {
           "type": "string"
@@ -60,13 +67,8 @@
         }
       ],
       "default": null,
-      "description": "Time the message expires in ISO format",
-      "title": "Expiration Time (UTC)"
-    },
-    "machine_time_utc": {
-      "description": "Time of the event at the detector in ISO format",
-      "title": "Machine Time Utc",
-      "type": "string"
+      "description": "Time of the event at the detector in ISO 8601-1:2019 format",
+      "title": "Machine time (UTC)"
     },
     "is_pre_sn": {
       "anyOf": [
@@ -129,44 +131,45 @@
           "type": "null"
         }
       ],
-      "default": "0.1a",
+      "default": "0.1",
       "description": "Schema version of the message",
       "title": "Schema Version"
     },
     "detector_name": {
-      "default": null,
       "description": "Name of the detector that sent the message",
       "title": "Detector Name",
       "type": "string"
     },
-    "neutrino_time_utc": {
-      "description": "Time of the first neutrino in the event in ISO format",
-      "title": "Neutrino Time Utc",
+    "retract_message_uid": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Unique identifier for the message to retract",
+      "title": "Unique message ID"
+    },
+    "retract_latest": {
+      "default": false,
+      "description": "True if the latest message is being retracted",
+      "title": "Retract Latest Flag",
+      "type": "boolean"
+    },
+    "retraction_reason": {
+      "description": "Reason for retraction",
+      "title": "Retraction reason",
       "type": "string"
-    },
-    "p_values": {
-      "description": "p-values of the event",
-      "items": {
-        "minimum": 0.0,
-        "type": "number"
-      },
-      "title": "P Values",
-      "type": "array"
-    },
-    "t_bin_width_sec": {
-      "description": "Time bin width of the event",
-      "minimum": 0.0,
-      "title": "T Bin Width Sec",
-      "type": "number"
     }
   },
   "required": [
     "tier",
-    "machine_time_utc",
-    "neutrino_time_utc",
-    "p_values",
-    "t_bin_width_sec"
+    "detector_name",
+    "retraction_reason"
   ],
-  "title": "SigTierMessage",
+  "title": "RetractionMessage",
   "type": "object"
 }
