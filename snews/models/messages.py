@@ -9,7 +9,8 @@ from uuid import uuid4
 # Third-party modules
 import numpy as np
 from pydantic import (BaseModel, ConfigDict, Field, NonNegativeFloat,
-                      ValidationError, field_validator, model_validator)
+                      NonNegativeInt, ValidationError, field_validator,
+                      model_validator)
 
 # Local modules
 from ..__version__ import schema_version
@@ -232,20 +233,20 @@ class RetractionMessage(DetectorMessageBase):
 
     model_config = ConfigDict(validate_assignment=True)
 
-    retract_message_uid: Optional[str] = Field(
+    retract_message_uuid: Optional[str] = Field(
         default=None,
         title="Unique message ID",
         description="Unique identifier for the message to retract"
     )
 
-    retract_latest: bool = Field(
-        default=False,
+    retract_latest_n: NonNegativeInt = Field(
+        default=0,
         title="Retract Latest Flag",
         description="True if the latest message is being retracted",
     )
 
-    retraction_reason: str = Field(
-        ...,
+    retraction_reason: Optional[str] = Field(
+        default=None,
         title="Retraction reason",
         description="Reason for retraction",
     )
@@ -257,11 +258,11 @@ class RetractionMessage(DetectorMessageBase):
 
     @model_validator(mode="after")
     def _validate_model(self):
-        if self.retract_latest and self.retract_message_uid is not None:
-            raise ValueError("retract_message_uuid cannot be specified when retract_latest=True")
+        if self.retract_latest_n > 0 and self.retract_message_uuid is not None:
+            raise ValueError("retract_message_uuid cannot be specified when retract_latest_n > 0")
 
-        if not self.retract_latest and self.retract_message_uid is None:
-            raise ValueError("Must specify either retract_message_uuid or retract_latest=True")
+        if self.retract_latest_n == 0 and self.retract_message_uuid is None:
+            raise ValueError("Must specify either retract_message_uuid or retract_latest_n > 0")
         return self
 
 

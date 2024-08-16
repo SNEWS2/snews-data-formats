@@ -140,7 +140,7 @@
       "title": "Detector Name",
       "type": "string"
     },
-    "retract_message_uid": {
+    "retract_message_uuid": {
       "anyOf": [
         {
           "type": "string"
@@ -153,22 +153,30 @@
       "description": "Unique identifier for the message to retract",
       "title": "Unique message ID"
     },
-    "retract_latest": {
-      "default": false,
+    "retract_latest_n": {
+      "default": 0,
       "description": "True if the latest message is being retracted",
+      "minimum": 0,
       "title": "Retract Latest Flag",
-      "type": "boolean"
+      "type": "integer"
     },
     "retraction_reason": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
       "description": "Reason for retraction",
-      "title": "Retraction reason",
-      "type": "string"
+      "title": "Retraction reason"
     }
   },
   "required": [
     "tier",
-    "detector_name",
-    "retraction_reason"
+    "detector_name"
   ],
   "title": "RetractionMessage",
   "type": "object"
