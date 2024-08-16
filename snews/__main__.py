@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 # Standard modules
+import inspect
 import json
 import logging
 from pathlib import Path
@@ -32,6 +33,8 @@ def generate_model_schemas(outdir: str = None, models_module: list = models, dry
         model_class = getattr(models, model_class_name)
         for model_name in model_class.__all__:
             model = getattr(model_class, model_name)
+            if not inspect.isclass(model):
+                continue
 
             if not issubclass(model, BaseModel):
                 continue

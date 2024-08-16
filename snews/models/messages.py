@@ -1,11 +1,4 @@
 # -*- coding: utf-8 -*-
-__all__ = [
-    "HeartBeat",
-    "Retraction",
-    "CoincidenceTierMessage",
-    "SignificanceTierMessage",
-    "TimingTierMessage"
-]
 
 # Standard library modules
 from datetime import UTC, datetime, timedelta
@@ -15,14 +8,23 @@ from uuid import uuid4
 
 # Third-party modules
 import numpy as np
-from pydantic import (UUID4, BaseModel, Field, NonNegativeFloat,
-                      field_validator, model_validator, root_validator,
-                      validator)
+from pydantic import (BaseModel, Field, NonNegativeFloat, ValidationError,
+                      field_validator, model_validator)
 
 # Local modules
 from ..__version__ import schema_version
 from ..data import detectors
 from ..models.timing import PrecisionTimestamp
+
+__all__ = [
+    "HeartbeatMessage",
+    "RetractionMessage",
+    "CoincidenceTierMessage",
+    "SignificanceTierMessage",
+    "TimingTierMessage",
+    "compatible_message_types",
+    "create_messages",
+]
 
 
 # .................................................................................................
@@ -68,10 +70,11 @@ class MessageBase(BaseModel):
         description="Textual identifier for the message"
     )
 
-    uid: UUID4 = Field(
+    uuid: str = Field(
         title="Unique message ID",
         default_factory=uuid4,
-        description="Unique identifier for the message"
+        description="Unique identifier for the message",
+        validate_default=True
     )
 
     tier: Tier = Field(
@@ -83,13 +86,15 @@ class MessageBase(BaseModel):
     sent_time_utc: Optional[str] = Field(
         default=None,
         title="Sent time (UTC)",
-        description="Time the message was sent in ISO 8601-1:2019 format"
+        description="Time the message was sent in ISO 8601-1:2019 format",
+        validate_default=True
     )
 
     machine_time_utc: Optional[str] = Field(
         default=None,
         title="Machine time (UTC)",
-        description="Time of the event at the detector in ISO 8601-1:2019 format"
+        description="Time of the event at the detector in ISO 8601-1:2019 format",
+        validate_default=True
     )
 
     is_pre_sn: Optional[bool] = Field(
@@ -123,13 +128,20 @@ class MessageBase(BaseModel):
         frozen=True,
     )
 
-    @validator("sent_time_utc", "machine_time_utc", pre=True, always=True)
+    @field_validator("sent_time_utc", "machine_time_utc", mode="before")
     def _convert_timestamp_to_ns_precision(cls, v):
         """
         Convert to nanosecond precision (before running Pydantic validators).
         """
         if v is not None:
             return convert_timestamp_to_ns_precision(timestamp=v)
+
+    @field_validator("uuid", mode="before")
+    def _cast_uuid_to_string(cls, v):
+        """
+        Cast UUID to string (before running Pydantic validators).
+        """
+        return str(v)
 
     @model_validator(mode="after")
     def _format_id(self):
@@ -142,6 +154,18 @@ class MessageBase(BaseModel):
             self.id = f"{self.detector_name}_{self.tier.value}_{self.machine_time_utc}"
 
         return self
+
+    def fields(self):
+        """
+        Return a list of fields for the message.
+        """
+        return list(self.model_fields.keys())
+
+    def required_fields(self):
+        """
+        Return a list of required fields for the message.
+        """
+        return [k for k, v in self.model_fields.items() if v.is_required()]
 
 
 # .................................................................................................
@@ -171,7 +195,7 @@ class DetectorMessageBase(MessageBase):
 
 
 # .................................................................................................
-class HeartBeat(DetectorMessageBase):
+class HeartbeatMessage(DetectorMessageBase):
     """
     Heartbeat detector message.
     """
@@ -186,7 +210,7 @@ class HeartBeat(DetectorMessageBase):
         examples=["ON", "OFF"]
     )
 
-    @root_validator(pre=True)
+    @model_validator(mode="before")
     def _set_tier(cls, values):
         values['tier'] = Tier.HEART_BEAT
         return values
@@ -204,7 +228,7 @@ class HeartBeat(DetectorMessageBase):
 
 
 # .................................................................................................
-class Retraction(DetectorMessageBase):
+class RetractionMessage(DetectorMessageBase):
     """
     Retraction detector message.
     """
@@ -212,7 +236,7 @@ class Retraction(DetectorMessageBase):
     class Config:
         validate_assignment = True
 
-    retract_message_uid: Optional[UUID4] = Field(
+    retract_message_uid: Optional[str] = Field(
         default=None,
         title="Unique message ID",
         description="Unique identifier for the message to retract"
@@ -230,7 +254,7 @@ class Retraction(DetectorMessageBase):
         description="Reason for retraction",
     )
 
-    @root_validator(pre=True)
+    @model_validator(mode="before")
     def _set_tier(cls, values):
         values['tier'] = Tier.RETRACTION
         return values
@@ -238,17 +262,17 @@ class Retraction(DetectorMessageBase):
     @model_validator(mode="after")
     def _validate_model(self):
         if self.retract_latest and self.retract_message_uid is not None:
-            raise ValueError("retract_message_uid cannot be specified when retract_latest=True")
+            raise ValueError("retract_message_uuid cannot be specified when retract_latest=True")
 
         if not self.retract_latest and self.retract_message_uid is None:
-            raise ValueError("Must specify either retract_message_uid or retract_latest=True")
+            raise ValueError("Must specify either retract_message_uuid or retract_latest=True")
         return self
 
 
 # .................................................................................................
 class TierMessageBase(DetectorMessageBase):
     """
-    Tier detector base message
+    Tier base message
     """
 
     class Config:
@@ -276,13 +300,13 @@ class TimingTierMessage(TierMessageBase):
     class Config:
         validate_assignment = True
 
-    timing_series: List[str] = Field(
+    timing_series: List[Union[str, int]] = Field(
         ...,
         title="Timing Series",
         description="Timing series of the event",
     )
 
-    @root_validator(pre=True)
+    @model_validator(mode="before")
     def _set_tier(cls, values):
         values['tier'] = Tier.TIMING_TIER
         return values
@@ -322,7 +346,7 @@ class SignificanceTierMessage(TierMessageBase):
         description="Time bin width of the event",
     )
 
-    @root_validator(pre=True)
+    @model_validator(mode="before")
     def _set_tier(cls, values):
         values['tier'] = Tier.SIGNIFICANCE_TIER
         return values
@@ -358,7 +382,7 @@ class CoincidenceTierMessage(TierMessageBase):
         description="Time of the first neutrino in the event in ISO 8601-1:2019 format"
     )
 
-    @root_validator(pre=True)
+    @model_validator(mode="before")
     def _set_tier(cls, values):
         values['tier'] = Tier.COINCIDENCE_TIER
         return values
@@ -384,3 +408,41 @@ class CoincidenceTierMessage(TierMessageBase):
                 raise ValueError("neutrino_time_utc must be in the past")
 
         return self
+
+
+# .................................................................................................
+def compatible_message_types(**kwargs) -> list:
+    """
+    Return a list of message types that are compatible with the given keyword arguments.
+    """
+
+    message_types = [
+        HeartbeatMessage,
+        RetractionMessage,
+        CoincidenceTierMessage,
+        SignificanceTierMessage,
+        TimingTierMessage,
+    ]
+
+    compatible_message_types = []
+    for message_type in message_types:
+        try:
+            message_type(**kwargs)
+            compatible_message_types.append(message_type)
+        except ValidationError:
+            pass
+
+    return compatible_message_types
+
+
+# .................................................................................................
+def create_messages(**kwargs) -> list:
+    """
+    Return a list of messages initialized with the given keyword arguments.
+    """
+
+    messages = []
+    for message_type in compatible_message_types(**kwargs):
+        messages.append(message_type(**kwargs))
+
+    return messages
