@@ -9,7 +9,7 @@ from typing import Literal, Optional, Union
 
 # Third party imports
 import numpy as np
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 # Local imports
 from ..data.utilities import num_leap_seconds_between
@@ -30,8 +30,7 @@ class PrecisionTimestamp(BaseModel, arbitrary_types_allowed=True):
             Supported values: "s", "ms", "us", "ns".
     """
 
-    class Config:
-        validate_assignment = True
+    model_config = ConfigDict(validate_assignment=True)
 
     timestamp: Optional[Union[np.datetime64, datetime, str]] = Field(
         default_factory=lambda: datetime.now(UTC),
@@ -61,12 +60,14 @@ class PrecisionTimestamp(BaseModel, arbitrary_types_allowed=True):
 
     @field_validator("timestamp")
     def _validate_and_cast_timestamp(cls, v):
-        if not isinstance(v, np.datetime64):
-            v = np.datetime64(v)
-            return v
+        if isinstance(v, datetime) and v.tzinfo is not None:
+            v = v.replace(tzinfo=None)
 
-        if isinstance(v, np.datetime64):
-            return v
+        if not isinstance(v, np.datetime64):
+            print(v)
+            v = np.datetime64(v)
+
+        return v
 
     def __sub__(self, other) -> np.timedelta64:
         if isinstance(other, PrecisionTimestamp):
