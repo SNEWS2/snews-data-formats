@@ -8,8 +8,8 @@ from uuid import uuid4
 
 # Third-party modules
 import numpy as np
-from pydantic import (BaseModel, Field, NonNegativeFloat, ValidationError,
-                      field_validator, model_validator)
+from pydantic import (BaseModel, ConfigDict, Field, NonNegativeFloat,
+                      ValidationError, field_validator, model_validator)
 
 # Local modules
 from ..__version__ import schema_version
@@ -61,8 +61,7 @@ class MessageBase(BaseModel):
     Base class for all messages.
     """
 
-    class Config:
-        validate_assignment = True
+    model_config = ConfigDict(validate_assignment=True)
 
     id: Optional[str] = Field(
         default=None,
@@ -174,8 +173,7 @@ class DetectorMessageBase(MessageBase):
     Base class for all messages related to a specific detector.
     """
 
-    class Config:
-        validate_assignment = True
+    model_config = ConfigDict(validate_assignment=True)
 
     detector_name: str = Field(
         ...,
@@ -200,8 +198,7 @@ class HeartbeatMessage(DetectorMessageBase):
     Heartbeat detector message.
     """
 
-    class Config:
-        validate_assignment = True
+    model_config = ConfigDict(validate_assignment=True)
 
     detector_status: str = Field(
         ...,
@@ -233,8 +230,7 @@ class RetractionMessage(DetectorMessageBase):
     Retraction detector message.
     """
 
-    class Config:
-        validate_assignment = True
+    model_config = ConfigDict(validate_assignment=True)
 
     retract_message_uid: Optional[str] = Field(
         default=None,
@@ -275,8 +271,7 @@ class TierMessageBase(DetectorMessageBase):
     Tier base message
     """
 
-    class Config:
-        validate_assignment = True
+    model_config = ConfigDict(validate_assignment=True)
 
     p_val: Optional[NonNegativeFloat] = Field(
         default=None,
@@ -297,8 +292,7 @@ class TimingTierMessage(TierMessageBase):
     Timing tier detector message.
     """
 
-    class Config:
-        validate_assignment = True
+    model_config = ConfigDict(validate_assignment=True)
 
     timing_series: List[Union[str, int]] = Field(
         ...,
@@ -331,8 +325,7 @@ class SignificanceTierMessage(TierMessageBase):
     Significance tier detector message.
     """
 
-    class Config:
-        validate_assignment = True
+    model_config = ConfigDict(validate_assignment=True)
 
     p_values: List[NonNegativeFloat] = Field(
         ...,
@@ -373,8 +366,7 @@ class CoincidenceTierMessage(TierMessageBase):
     Coincidence tier detector message.
     """
 
-    class Config:
-        validate_assignment = True
+    model_config = ConfigDict(validate_assignment=True)
 
     neutrino_time_utc: str = Field(
         ...,
