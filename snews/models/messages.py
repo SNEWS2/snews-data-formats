@@ -379,7 +379,7 @@ class CoincidenceTierMessage(TierMessageBase):
         values['tier'] = Tier.COINCIDENCE_TIER
         return values
 
-    @field_validator("neutrino_time_utc")
+    @field_validator("neutrino_time_utc", mode="before")
     def _validate_neutrino_time_format(cls, v: str):
         return convert_timestamp_to_ns_precision(v)
 

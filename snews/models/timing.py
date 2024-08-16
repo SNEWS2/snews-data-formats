@@ -64,7 +64,6 @@ class PrecisionTimestamp(BaseModel, arbitrary_types_allowed=True):
             v = v.replace(tzinfo=None)
 
         if not isinstance(v, np.datetime64):
-            print(v)
             v = np.datetime64(v)
 
         return v
