@@ -403,7 +403,7 @@ class CoincidenceTierMessage(TierMessageBase):
 
 
 # .................................................................................................
-def compatible_message_types(**kwargs) -> list:
+def compatible_message_types(include_heartbeats=False, **kwargs) -> list:
     """
     Return a list of message types that are compatible with the given keyword arguments.
     """
@@ -421,6 +421,10 @@ def compatible_message_types(**kwargs) -> list:
         try:
             message_type(**kwargs)
             compatible_message_types.append(message_type)
+
+            if include_heartbeats and message_type == CoincidenceTierMessage:
+                compatible_message_types.append(HeartbeatMessage)
+
         except ValidationError:
             pass
 
@@ -435,6 +439,12 @@ def create_messages(**kwargs) -> list:
 
     messages = []
     for message_type in compatible_message_types(**kwargs):
-        messages.append(message_type(**kwargs))
+        if message_type == HeartbeatMessage:
+            messages.append(message_type(detector_status="ON", **kwargs))
+        else:
+            messages.append(message_type(**kwargs))
+
+    if len(messages) == 0:
+        raise ValueError("No compatible message types found")
 
     return messages
