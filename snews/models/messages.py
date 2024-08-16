@@ -9,7 +9,8 @@ from uuid import uuid4
 # Third-party modules
 import numpy as np
 from pydantic import (BaseModel, ConfigDict, Field, NonNegativeFloat,
-                      ValidationError, field_validator, model_validator)
+                      NonNegativeInt, ValidationError, field_validator,
+                      model_validator)
 
 # Local modules
 from ..__version__ import schema_version
@@ -232,20 +233,20 @@ class RetractionMessage(DetectorMessageBase):
 
     model_config = ConfigDict(validate_assignment=True)
 
-    retract_message_uid: Optional[str] = Field(
+    retract_message_uuid: Optional[str] = Field(
         default=None,
         title="Unique message ID",
         description="Unique identifier for the message to retract"
     )
 
-    retract_latest: bool = Field(
-        default=False,
+    retract_latest_n: NonNegativeInt = Field(
+        default=0,
         title="Retract Latest Flag",
         description="True if the latest message is being retracted",
     )
 
-    retraction_reason: str = Field(
-        ...,
+    retraction_reason: Optional[str] = Field(
+        default=None,
         title="Retraction reason",
         description="Reason for retraction",
     )
@@ -257,11 +258,11 @@ class RetractionMessage(DetectorMessageBase):
 
     @model_validator(mode="after")
     def _validate_model(self):
-        if self.retract_latest and self.retract_message_uid is not None:
-            raise ValueError("retract_message_uuid cannot be specified when retract_latest=True")
+        if self.retract_latest_n > 0 and self.retract_message_uuid is not None:
+            raise ValueError("retract_message_uuid cannot be specified when retract_latest_n > 0")
 
-        if not self.retract_latest and self.retract_message_uid is None:
-            raise ValueError("Must specify either retract_message_uuid or retract_latest=True")
+        if self.retract_latest_n == 0 and self.retract_message_uuid is None:
+            raise ValueError("Must specify either retract_message_uuid or retract_latest_n > 0")
         return self
 
 
@@ -379,7 +380,7 @@ class CoincidenceTierMessage(TierMessageBase):
         values['tier'] = Tier.COINCIDENCE_TIER
         return values
 
-    @field_validator("neutrino_time_utc")
+    @field_validator("neutrino_time_utc", mode="before")
     def _validate_neutrino_time_format(cls, v: str):
         return convert_timestamp_to_ns_precision(v)
 
@@ -403,7 +404,7 @@ class CoincidenceTierMessage(TierMessageBase):
 
 
 # .................................................................................................
-def compatible_message_types(**kwargs) -> list:
+def compatible_message_types(include_heartbeats=False, **kwargs) -> list:
     """
     Return a list of message types that are compatible with the given keyword arguments.
     """
@@ -421,6 +422,10 @@ def compatible_message_types(**kwargs) -> list:
         try:
             message_type(**kwargs)
             compatible_message_types.append(message_type)
+
+            if include_heartbeats and message_type == CoincidenceTierMessage:
+                compatible_message_types.append(HeartbeatMessage)
+
         except ValidationError:
             pass
 
@@ -435,6 +440,12 @@ def create_messages(**kwargs) -> list:
 
     messages = []
     for message_type in compatible_message_types(**kwargs):
-        messages.append(message_type(**kwargs))
+        if message_type == HeartbeatMessage:
+            messages.append(message_type(detector_status="ON", **kwargs))
+        else:
+            messages.append(message_type(**kwargs))
+
+    if len(messages) == 0:
+        raise ValueError("No compatible message types found")
 
     return messages

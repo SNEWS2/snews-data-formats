@@ -64,7 +64,7 @@ strategy_required_fields_heartbeat = {
 # Retraction message
 strategy_required_fields_retraction = {
     **strategy_required_fields_base,
-    "retract_message_uid": st.uuids(version=4).map(lambda x: str(x)),
+    "retract_message_uuid": st.uuids(version=4).map(lambda x: str(x)),
     "retraction_reason": st.text(min_size=1),
 }
 
@@ -165,10 +165,10 @@ def test_snews_message_model_retraction_required(**kwargs):
 def test_snews_message_model_retraction_validation_both_indicators(**kwargs):
     with pytest.raises(ValueError) as exc_info:
         msg = RetractionMessage(**kwargs)
-        msg.retract_latest = True
+        msg.retract_latest_n = 3
         msg.retract_message_uid = "1234567890"
 
-    assert "retract_message_uuid cannot be specified when retract_latest=True" in str(
+    assert "retract_message_uuid cannot be specified when retract_latest_n > 0" in str(
         exc_info.value
     )
 
@@ -177,9 +177,9 @@ def test_snews_message_model_retraction_validation_both_indicators(**kwargs):
 def test_snews_message_model_retraction_validation_neither_indicator(**kwargs):
     with pytest.raises(ValueError) as exc_info:
         msg = RetractionMessage(**kwargs)
-        msg.retract_latest = False
-        msg.retract_message_uid = None
+        msg.retract_latest_n = 0
+        msg.retract_message_uuid = None
 
-    assert "Must specify either retract_message_uuid or retract_latest=True" in str(
+    assert "Must specify either retract_message_uuid or retract_latest_n > 0" in str(
         exc_info.value
     )
