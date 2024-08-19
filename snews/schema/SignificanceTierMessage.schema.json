@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "schema_author": "Supernova Early Warning System (SNEWS)",
-  "schema_version": "0.1",
+  "schema_version": "0.2",
   "$defs": {
     "Tier": {
       "enum": [
@@ -131,7 +131,7 @@
           "type": "null"
         }
       ],
-      "default": "0.1",
+      "default": "0.2",
       "description": "Schema version of the message",
       "title": "Schema Version"
     },
