@@ -48,6 +48,20 @@ def test_precision_timestamp_datetime_output():
     )
 
 
+def test_precision_timestamp_tzinfo_conversion():
+    timestamp = datetime.datetime(
+        1987, 2, 24, 5, 31, 00,
+        tzinfo=datetime.timezone(datetime.timedelta(hours=-5), 'EST')
+    )
+
+    t = PrecisionTimestamp(timestamp=timestamp, precision="s")
+
+    t_datetime = t.to_datetime()
+    t_string = t.to_string()
+
+    assert t_datetime == timestamp.astimezone(datetime.UTC) and t_string == "1987-02-24T10:31:00Z"
+
+
 def test_precision_timestamp_incompatible_subtraction():
     with pytest.raises(TypeError) as exc_info:
         PrecisionTimestamp(timestamp="1987-02-24T05:31:00Z") - 1
