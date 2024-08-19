@@ -16,10 +16,7 @@ pydantic = "^2.4.2"
 single-version = "^1.6.0"
 pydantic-extra-types = "^2.1.0"
 pycountry = "^22.3.5"
-pytest-cov = "^4.1.0"
 numpy = "^1.26.3"
-jupyter = "^1.0.0"
-ipykernel = "^6.29.4"
 
 
 [tool.poetry.group.doc.dependencies]
@@ -29,8 +26,10 @@ mkdocs-section-index = "^0.3.8"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^7.4.2"
+pytest-cov = "^4.1.0"
 hypothesis = {extras = ["cli"], version = "^6.88.1"}
-ipykernel = "^6.29.0"
+jupyter = "^1.0.0"
+ipykernel = "^6.29.4"
 
 
 [tool.poetry.group.test.dependencies]

@@ -61,7 +61,7 @@ class PrecisionTimestamp(BaseModel, arbitrary_types_allowed=True):
     @field_validator("timestamp")
     def _validate_and_cast_timestamp(cls, v):
         if isinstance(v, datetime) and v.tzinfo is not None:
-            v = v.replace(tzinfo=None)
+            v = v.astimezone(UTC)
 
         if not isinstance(v, np.datetime64):
             v = np.datetime64(v)
