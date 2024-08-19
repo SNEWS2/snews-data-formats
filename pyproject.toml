@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "snews-data-formats"
-version = "1.0.0a"
+version = "1.0.0"
 description = "A unified collection of SNEWS data, models, and schema"
 authors = ["SNEWS Collaboration <snews2.0@lists.bnl.gov>"]
 maintainers = ["Justin Vasel <justin.vasel@gmail.com>"]
