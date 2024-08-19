@@ -138,12 +138,10 @@ def test_snews_message_model_heartbeat_required(**kwargs):
 
 @given(**strategy_required_fields_heartbeat)
 def test_snews_message_model_heartbeat_invalid_detector(**kwargs):
-    with pytest.raises(ValueError) as exc_info:
-        msg = HeartbeatMessage(**kwargs)
-        msg.is_test = False
-        msg.detector_name = "Super-Duper-K"
+    msg = HeartbeatMessage(**kwargs)
+    msg.detector_name = "Super-Duper-K"
 
-    assert "Invalid detector name" in str(exc_info.value)
+    assert msg.is_valid_detector() is False
 
 
 @given(**strategy_required_fields_heartbeat)

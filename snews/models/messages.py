@@ -182,15 +182,11 @@ class DetectorMessageBase(MessageBase):
         description="Name of the detector that sent the message"
     )
 
-    @model_validator(mode="after")
-    def _validate_detector_name(self) -> str:
+    def is_valid_detector(self):
         """
         Ensure the detector name is in the list of supported detectors.
         """
-
-        if self.detector_name not in detectors.names and not self.is_test:
-            raise ValueError(f"Invalid detector name. Options are: {detectors.names}")
-        return self
+        return self.detector_name in detectors.names
 
 
 # .................................................................................................
