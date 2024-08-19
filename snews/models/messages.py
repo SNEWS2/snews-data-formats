@@ -25,7 +25,16 @@ __all__ = [
     "TimingTierMessage",
     "compatible_message_types",
     "create_messages",
+    "get_fields",
 ]
+
+
+# .................................................................................................
+def get_fields(model, required=False) -> list:
+    """
+    Return a list of all or required fields for the message.
+    """
+    return [k for k, v in model.model_fields.items() if v.is_required() or not required]
 
 
 # .................................................................................................
@@ -64,6 +73,9 @@ class MessageBase(BaseModel):
 
     model_config = ConfigDict(validate_assignment=True)
 
+    # NOTE: This field is optional from the user's perspective, but during model validation,
+    # it will be automatically generated if not already specified, so in practice this field
+    # will never be empty.
     id: Optional[str] = Field(
         default=None,
         title="Human-readable message ID",
@@ -154,18 +166,6 @@ class MessageBase(BaseModel):
             self.id = f"{self.detector_name}_{self.tier.value}_{self.machine_time_utc}"
 
         return self
-
-    def fields(self):
-        """
-        Return a list of fields for the message.
-        """
-        return list(self.model_fields.keys())
-
-    def required_fields(self):
-        """
-        Return a list of required fields for the message.
-        """
-        return [k for k, v in self.model_fields.items() if v.is_required()]
 
 
 # .................................................................................................
@@ -423,6 +423,7 @@ def compatible_message_types(include_heartbeats=False, **kwargs) -> list:
             message_type(**kwargs)
             compatible_message_types.append(message_type)
 
+            # Coincidence tier messages can also double as heartbeats
             if include_heartbeats and message_type == CoincidenceTierMessage:
                 compatible_message_types.append(HeartbeatMessage)
 
@@ -440,10 +441,13 @@ def create_messages(**kwargs) -> list:
 
     messages = []
     for message_type in compatible_message_types(**kwargs):
-        if message_type == HeartbeatMessage:
-            messages.append(message_type(detector_status="ON", **kwargs))
+        if message_type == HeartbeatMessage and "detector_status" not in kwargs.keys():
+            message = message_type(detector_status="ON", **kwargs)
+
         else:
-            messages.append(message_type(**kwargs))
+            message = message_type(**kwargs)
+
+        messages.append(message)
 
     if len(messages) == 0:
         raise ValueError("No compatible message types found")
