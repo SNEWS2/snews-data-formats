@@ -291,6 +291,12 @@ class TimingTierMessage(TierMessageBase):
 
     model_config = ConfigDict(validate_assignment=True)
 
+    neutrino_time_utc: str = Field(
+        ...,
+        title="Neutrino Time (UTC)",
+        description="Time of the first neutrino in the event in ISO 8601-1:2019 format"
+    )
+
     timing_series: List[Union[str, int]] = Field(
         ...,
         title="Timing Series",
@@ -301,6 +307,28 @@ class TimingTierMessage(TierMessageBase):
     def _set_tier(cls, values):
         values['tier'] = Tier.TIMING_TIER
         return values
+
+    @field_validator("neutrino_time_utc", mode="before")
+    def _validate_neutrino_time_format(cls, v: str):
+        return convert_timestamp_to_ns_precision(v)
+
+    @model_validator(mode="after")
+    def _validate_neutrino_time(self):
+        now = datetime.now(UTC)
+
+        # Cast into ISO 8601-1:2019 format with ns precision
+        neutrino_time_pt = PrecisionTimestamp(timestamp=self.neutrino_time_utc)
+
+        if not self.is_test:
+            # Check newer than 48 hours ago
+            if neutrino_time_pt.to_datetime() < now - timedelta(hours=48):
+                raise ValueError("neutrino_time_utc must be within past 48 hours")
+
+            # Check not in the future
+            if neutrino_time_pt.to_datetime() > now:
+                raise ValueError("neutrino_time_utc must be in the past")
+
+        return self
 
     @field_validator("timing_series")
     def _validate_timing_series(cls, v: List[str]):
