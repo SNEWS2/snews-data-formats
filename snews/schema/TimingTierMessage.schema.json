@@ -155,6 +155,11 @@
       "description": "p-value of coincidence",
       "title": "P-value"
     },
+    "neutrino_time_utc": {
+      "description": "Time of the first neutrino in the event in ISO 8601-1:2019 format",
+      "title": "Neutrino Time (UTC)",
+      "type": "string"
+    },
     "timing_series": {
       "description": "Timing series of the event",
       "items": {
@@ -174,6 +179,7 @@
   "required": [
     "tier",
     "detector_name",
+    "neutrino_time_utc",
     "timing_series"
   ],
   "title": "TimingTierMessage",
