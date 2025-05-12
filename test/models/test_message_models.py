@@ -31,6 +31,7 @@ strategy_required_fields_base = {
 strategy_required_fields_tier = {
     **strategy_required_fields_base,
     "p_val": st.floats(min_value=0.0, max_value=1.0),
+    "neutrino_time_utc": st.deferred(lambda: st.just(datetime.datetime.now(datetime.timezone.utc).isoformat())),
 }
 
 # TimingTier message
