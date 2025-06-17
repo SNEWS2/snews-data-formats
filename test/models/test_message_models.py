@@ -37,7 +37,7 @@ strategy_required_fields_tier = {
 # TimingTier message
 strategy_required_fields_tier_timing = {
     **strategy_required_fields_tier,
-    "timing_series": st.lists(elements=st.datetimes().map(lambda x: x.isoformat())),
+    "timing_series": st.lists(elements=st.integers().map(lambda x: int(x))),
 }
 
 # SignalTier message
@@ -78,15 +78,15 @@ def test_snews_message_model_timing_tier_required(**kwargs):
     TimingTierMessage(**kwargs)
 
 
-@given(**strategy_required_fields_tier_timing)
-def test_snews_message_model_timing_tier_invalid_timing_series(**kwargs):
-    with pytest.raises(ValueError) as exc_info:
-        msg = TimingTierMessage(**kwargs)
-        msg.timing_series = ["1987-02-24T05:31:00Z", "Feb 24, 1987 5:31 AM UTC"]
-
-    assert "Timing series entries must be in ISO 8601-1:2019 format" in str(
-        exc_info.value
-    )
+#@given(**strategy_required_fields_tier_timing)
+#def test_snews_message_model_timing_tier_invalid_timing_series(**kwargs):
+#    with pytest.raises(ValueError) as exc_info:
+#        msg = TimingTierMessage(**kwargs)
+#        msg.timing_series = ["1987-02-24T05:31:00Z", "Feb 24, 1987 5:31 AM UTC"]
+#
+#    assert "Timing series entries must be in ISO 8601-1:2019 format" in str(
+#        exc_info.value
+#    )
 
 
 # Significance Tier Test
