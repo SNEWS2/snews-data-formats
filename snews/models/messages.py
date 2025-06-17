@@ -3,7 +3,8 @@
 # Standard library modules
 from datetime import UTC, datetime, timedelta
 from enum import Enum
-from typing import List, Optional, Union
+from typing import List, Optional, Union, Annotated
+from annotated_types import Len
 from uuid import uuid4
 
 # Third-party modules
@@ -297,7 +298,7 @@ class TimingTierMessage(TierMessageBase):
         description="Time of the first neutrino in the event in ISO 8601-1:2019 format"
     )
 
-    timing_series: List[int] = Field(
+    timing_series: Annotated[list[int], Len(min_length=1)] = Field(
         ...,
         title="Timing Series",
         description="Timing series of the event",

@@ -37,7 +37,7 @@ strategy_required_fields_tier = {
 # TimingTier message
 strategy_required_fields_tier_timing = {
     **strategy_required_fields_tier,
-    "timing_series": st.lists(elements=st.integers().map(lambda x: int(x))),
+    "timing_series": st.lists(elements=st.integers().map(lambda x: int(x)), min_size=1),
 }
 
 # SignalTier message
@@ -80,6 +80,17 @@ def test_snews_message_model_timing_tier_required(**kwargs):
 
 @given(**strategy_required_fields_tier_timing)
 def test_snews_message_model_timing_tier_invalid_timing_series(**kwargs):
+    #- Empty timing series are not allowed.
+    with pytest.raises(ValueError) as exc_info:
+        empty_tier_timing = kwargs | { 'timing_series' : [] }
+        print(empty_tier_timing)
+        msg = TimingTierMessage(**empty_tier_timing)
+
+    assert "List should have at least 1 item after validation" in str(
+        exc_info.value
+    )
+
+    #- Setting the timing series to integers is required.
     with pytest.raises(ValueError) as exc_info:
         msg = TimingTierMessage(**kwargs)
         msg.timing_series = ["1987-02-24T05:31:00Z", "Feb 24, 1987 5:31 AM UTC"]
