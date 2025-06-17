@@ -352,6 +352,18 @@ class SignificanceTierMessage(TierMessageBase):
 
     model_config = ConfigDict(validate_assignment=True)
 
+    neutrino_time_utc: str = Field(
+        ...,
+        title="Neutrino Time (UTC)",
+        description="Time of the first neutrino in the event in ISO 8601-1:2019 format"
+    )
+
+    time_start_utc: str = Field(
+        ...,
+        title="Neutrino Time (UTC)",
+        description="Base time for event series in ISO 8601-1:2019 format"
+    )
+
     p_values: List[NonNegativeFloat] = Field(
         ...,
         title="p-values",
@@ -362,6 +374,12 @@ class SignificanceTierMessage(TierMessageBase):
         ...,
         title="Time Bin Width (s)",
         description="Time bin width of the event",
+    )
+
+    background_rate: NonNegativeFloat = Field(
+        ...,
+        title="Background rate (Hz = 1/s)",
+        description="Detector background rate",
     )
 
     @model_validator(mode="before")
