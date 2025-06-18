@@ -298,10 +298,16 @@ class TimingTierMessage(TierMessageBase):
         description="Time of the first neutrino in the event in ISO 8601-1:2019 format"
     )
 
+    start_time_utc: str = Field(
+        ...,
+        title="Start time (UTC)",
+        description="Base time for event time series or first time bin of the binned histogram of events ISO 8601-1:2019 format"
+    )
+
     timing_series: Annotated[list[int], Len(min_length=1)] = Field(
         ...,
         title="Timing Series",
-        description="Timing series of the event",
+        description="Timing series of the event.",
     )
 
     @model_validator(mode="before")
