@@ -9,9 +9,9 @@ from uuid import uuid4
 
 # Third-party modules
 import numpy as np
-from pydantic import (BaseModel, ConfigDict, Field, NonNegativeFloat,
-                      NonNegativeInt, ValidationError, field_validator,
-                      model_validator)
+from pydantic import (BaseModel, ConfigDict, Field,
+                      NonNegativeFloat, NonNegativeInt, PositiveInt,
+                      ValidationError, field_validator, model_validator)
 
 # Local modules
 from ..__version__ import schema_version
@@ -307,7 +307,13 @@ class TimingTierMessage(TierMessageBase):
     timing_series: Annotated[list[int], Len(min_length=1)] = Field(
         ...,
         title="Timing Series",
-        description="Timing series of the event.",
+        description="Timing series of the event. If time_bin_width_ns is specified, this represents the binned event counts; else, it represents individual time offsets from start_time_utc, in ns.",
+    )
+
+    time_bin_width_ns: Optional[PositiveInt] = Field(
+        default=None,
+        title="Time Bin Width",
+        description="Bin width of histogrammed event counts, in ns",
     )
 
     background_rate_Hz: Optional[NonNegativeFloat] = Field(
