@@ -1,5 +1,7 @@
 # SNEWS Data Formats
 
+[![snews-data-formats-CI](https://github.com/SNEWS2/snews-data-formats/actions/workflows/ci.yaml/badge.svg)](https://github.com/SNEWS2/snews-data-formats/actions/workflows/ci.yaml)
+
 This package contains common data models and utilities for standardizing data formats across SNEWS packages.
 
 ## Features

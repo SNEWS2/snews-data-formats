@@ -3,7 +3,8 @@
 # Standard library modules
 from datetime import UTC, datetime, timedelta
 from enum import Enum
-from typing import List, Optional, Union
+from typing import List, Optional, Union, Annotated
+from annotated_types import Len
 from uuid import uuid4
 
 # Third-party modules
@@ -297,7 +298,7 @@ class TimingTierMessage(TierMessageBase):
         description="Time of the first neutrino in the event in ISO 8601-1:2019 format"
     )
 
-    timing_series: List[Union[str, int]] = Field(
+    timing_series: Annotated[list[int], Len(min_length=1)] = Field(
         ...,
         title="Timing Series",
         description="Timing series of the event",
@@ -331,12 +332,11 @@ class TimingTierMessage(TierMessageBase):
         return self
 
     @field_validator("timing_series")
-    def _validate_timing_series(cls, v: List[str]):
-        try:
-            converted_timestamps = list(map(convert_timestamp_to_ns_precision, v))
-        except ValueError:
-            raise ValueError("Timing series entries must be in ISO 8601-1:2019 format")
-        return converted_timestamps
+    def _validate_timing_series(cls, v: List[int]):
+        if not all(isinstance(_t, int) for _t in v):
+            raise ValueError('Timing series must be integers')
+
+        return v
 
     @model_validator(mode="after")
     def _validate_model(self):
