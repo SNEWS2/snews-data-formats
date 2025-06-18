@@ -94,17 +94,28 @@ def test_snews_message_model_timing_tier_required(**kwargs):
     TimingTierMessage(**opt_tier_timing)
 
 
+#- Check that negative numbers and floats fail for time bin widths.
+@given(**strategy_required_fields_tier_timing)
+def test_snews_message_model_timing_tier_required(**kwargs):
+    with pytest.raises(ValueError) as exc_info:
+        opt_tier_timing = kwargs | { 'time_bin_width_ns' : -150 }
+        TimingTierMessage(**opt_tier_timing)
+    assert "Input should be greater than 0" in str(exc_info.value)
+
+    with pytest.raises(ValueError) as exc_info:
+        opt_tier_timing = kwargs | { 'time_bin_width_ns' : 3.14159 }
+        TimingTierMessage(**opt_tier_timing)
+    assert "Input should be a valid integer, got a number with a fractional part" in str(exc_info.value)
+
+
 @given(**strategy_required_fields_tier_timing)
 def test_snews_message_model_timing_tier_invalid_timing_series(**kwargs):
     #- Empty timing series are not allowed.
     with pytest.raises(ValueError) as exc_info:
         empty_tier_timing = kwargs | { 'timing_series' : [] }
-        print(empty_tier_timing)
         msg = TimingTierMessage(**empty_tier_timing)
 
-    assert "List should have at least 1 item after validation" in str(
-        exc_info.value
-    )
+    assert "List should have at least 1 item after validation" in str(exc_info.value)
 
     #- Setting the timing series to integers is required.
     with pytest.raises(ValueError) as exc_info:
