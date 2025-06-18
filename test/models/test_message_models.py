@@ -37,6 +37,7 @@ strategy_required_fields_tier = {
 # TimingTier message
 strategy_required_fields_tier_timing = {
     **strategy_required_fields_tier,
+    "start_time_utc": st.deferred(lambda: st.just(datetime.datetime.now(datetime.timezone.utc).isoformat())),
     "timing_series": st.lists(elements=st.integers().map(lambda x: int(x)), min_size=1),
 }
 

@@ -337,6 +337,28 @@ class TimingTierMessage(TierMessageBase):
 
         return self
 
+    @field_validator("start_time_utc", mode="before")
+    def _validate_start_time_format(cls, v: str):
+        return convert_timestamp_to_ns_precision(v)
+
+    @model_validator(mode="after")
+    def _validate_start_time(self):
+        now = datetime.now(UTC)
+
+        # Cast into ISO 8601-1:2019 format with ns precision
+        start_time_pt = PrecisionTimestamp(timestamp=self.start_time_utc)
+
+        if not self.is_test:
+            # Check newer than 48 hours ago
+            if start_time_pt.to_datetime() < now - timedelta(hours=48):
+                raise ValueError("start_time_utc must be within past 48 hours")
+
+            # Check not in the future
+            if start_time_pt.to_datetime() > now:
+                raise ValueError("start_time_utc must be in the past")
+
+        return self
+
     @field_validator("timing_series")
     def _validate_timing_series(cls, v: List[int]):
         if not all(isinstance(_t, int) for _t in v):
