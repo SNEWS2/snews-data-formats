@@ -23,6 +23,14 @@ class DetectorType(Enum):
 
 
 # .................................................................................................
+class DetectionChannel(Enum):
+    NU_E = "Any electron neutrino interaction"
+    NU_E_BAR = "Any electron antineutrino interaction"
+    NC = "Any neutral current interaction"
+    OTHER = "Other"
+
+
+# .................................................................................................
 class Detector(BaseModel):
     id: int = Field(
         ...,

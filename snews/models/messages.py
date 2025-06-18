@@ -16,6 +16,7 @@ from pydantic import (BaseModel, ConfigDict, Field,
 # Local modules
 from ..__version__ import schema_version
 from ..data import detectors
+from ..models.detectors import DetectionChannel
 from ..models.timing import PrecisionTimestamp
 
 __all__ = [
@@ -320,6 +321,12 @@ class TimingTierMessage(TierMessageBase):
         default=None,
         title="Background rate",
         description="Detector background in Hz",
+    )
+
+    detection_channel: Optional[str] = Field(
+        default=None,
+        title="Detection channel",
+        description="Name of the detection channel"
     )
 
     @model_validator(mode="before")
