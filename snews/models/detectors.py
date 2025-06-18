@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-__all__ = ["Detector", "DetectorType"]
+__all__ = ["Detector", "DetectorType", "DetectionChannel"]
 
 # Standard library modules
 from enum import Enum
@@ -24,9 +24,9 @@ class DetectorType(Enum):
 
 # .................................................................................................
 class DetectionChannel(Enum):
-    NU_E = "Any electron neutrino interaction"
-    NU_E_BAR = "Any electron antineutrino interaction"
-    NC = "Any neutral current interaction"
+    NU_E = "Electron Neutrino"
+    NU_E_BAR = "Electron Antineutrino"
+    NC = "Neutral Current"
     OTHER = "Other"
 
 

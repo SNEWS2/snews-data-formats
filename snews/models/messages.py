@@ -323,7 +323,7 @@ class TimingTierMessage(TierMessageBase):
         description="Detector background in Hz",
     )
 
-    detection_channel: Optional[str] = Field(
+    detection_channel: Optional[DetectionChannel] = Field(
         default=None,
         title="Detection channel",
         description="Name of the detection channel"
