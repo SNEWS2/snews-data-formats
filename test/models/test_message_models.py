@@ -123,6 +123,19 @@ def test_snews_message_model_timing_tier_detection_channel(**kwargs):
     msg.detection_channel = 'Neutral Current'
     assert msg.detection_channel == DetectionChannel.NC
 
+    msg.detection_channel = 'Other'
+    assert msg.detection_channel == DetectionChannel.OTHER
+
+
+#- Optional fields: check invalid detection channel.
+@given(**strategy_required_fields_tier_timing)
+def test_snews_message_model_timing_tier_invalid_detection_channel(**kwargs):
+    with pytest.raises(ValueError) as exc_info:
+        opt_det_ch = kwargs | { 'detection_channel' : 'Charged Current' }
+        msg = TimingTierMessage(**opt_det_ch)
+
+    assert "Input should be 'Electron Neutrino', 'Electron Antineutrino', 'Neutral Current' or 'Other'" in str(exc_info.value)
+
 
 @given(**strategy_required_fields_tier_timing)
 def test_snews_message_model_timing_tier_invalid_timing_series(**kwargs):
