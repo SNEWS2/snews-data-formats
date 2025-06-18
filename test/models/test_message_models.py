@@ -10,6 +10,7 @@ from hypothesis import given
 
 # Local modules
 from snews.data import detectors
+from snews.models.detectors import DetectionChannel
 from snews.models.messages import (CoincidenceTierMessage, HeartbeatMessage,
                                    RetractionMessage, SignificanceTierMessage,
                                    Tier, TimingTierMessage)
@@ -106,6 +107,21 @@ def test_snews_message_model_timing_tier_invalid_bindwidth(**kwargs):
         opt_tier_timing = kwargs | { 'time_bin_width_ns' : 3.14159 }
         TimingTierMessage(**opt_tier_timing)
     assert "Input should be a valid integer, got a number with a fractional part" in str(exc_info.value)
+
+
+#- Optional fields: detection channel.
+@given(**strategy_required_fields_tier_timing)
+def test_snews_message_model_timing_tier_detection_channel(**kwargs):
+    opt_det_ch = kwargs | { 'detection_channel' : 'Electron Neutrino' }
+
+    msg = TimingTierMessage(**opt_det_ch)
+    assert msg.detection_channel == DetectionChannel.NU_E
+
+    msg.detection_channel = 'Electron Antineutrino'
+    assert msg.detection_channel == DetectionChannel.NU_E_BAR
+
+    msg.detection_channel = 'Neutral Current'
+    assert msg.detection_channel == DetectionChannel.NC
 
 
 @given(**strategy_required_fields_tier_timing)
