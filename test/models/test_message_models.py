@@ -74,9 +74,17 @@ strategy_required_fields_retraction = {
 
 
 # Timing Tier Test
+#- Required fields
 @given(**strategy_required_fields_tier_timing)
 def test_snews_message_model_timing_tier_required(**kwargs):
     TimingTierMessage(**kwargs)
+
+
+#- Optional fields
+@given(**strategy_required_fields_tier_timing)
+def test_snews_message_model_timing_tier_required(**kwargs):
+    opt_tier_timing = kwargs | { 'background_rate_Hz' : 3.14159 }
+    TimingTierMessage(**opt_tier_timing)
 
 
 @given(**strategy_required_fields_tier_timing)

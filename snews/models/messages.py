@@ -310,6 +310,12 @@ class TimingTierMessage(TierMessageBase):
         description="Timing series of the event.",
     )
 
+    background_rate_Hz: Optional[NonNegativeFloat] = Field(
+        default=None,
+        title="Background rate",
+        description="Detector background in Hz",
+    )
+
     @model_validator(mode="before")
     def _set_tier(cls, values):
         values['tier'] = Tier.TIMING_TIER
