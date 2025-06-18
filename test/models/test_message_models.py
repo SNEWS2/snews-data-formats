@@ -82,21 +82,21 @@ def test_snews_message_model_timing_tier_required(**kwargs):
 
 #- Optional fields: background rate.
 @given(**strategy_required_fields_tier_timing)
-def test_snews_message_model_timing_tier_required(**kwargs):
+def test_snews_message_model_timing_tier_bkg(**kwargs):
     opt_tier_timing = kwargs | { 'background_rate_Hz' : 3.14159 }
     TimingTierMessage(**opt_tier_timing)
 
 
 #- Optional fields: time bin width.
 @given(**strategy_required_fields_tier_timing)
-def test_snews_message_model_timing_tier_required(**kwargs):
+def test_snews_message_model_timing_tier_binwidth(**kwargs):
     opt_tier_timing = kwargs | { 'time_bin_width_ns' : 150 }
     TimingTierMessage(**opt_tier_timing)
 
 
 #- Check that negative numbers and floats fail for time bin widths.
 @given(**strategy_required_fields_tier_timing)
-def test_snews_message_model_timing_tier_required(**kwargs):
+def test_snews_message_model_timing_tier_invalid_bindwidth(**kwargs):
     with pytest.raises(ValueError) as exc_info:
         opt_tier_timing = kwargs | { 'time_bin_width_ns' : -150 }
         TimingTierMessage(**opt_tier_timing)
