@@ -78,21 +78,24 @@ strategy_required_fields_retraction = {
 #- Required fields
 @given(**strategy_required_fields_tier_timing)
 def test_snews_message_model_timing_tier_required(**kwargs):
-    TimingTierMessage(**kwargs)
+    msg = TimingTierMessage(**kwargs)
+    assert msg.is_binned_time_series() is False
 
 
 #- Optional fields: background rate.
 @given(**strategy_required_fields_tier_timing)
 def test_snews_message_model_timing_tier_bkg(**kwargs):
     opt_tier_timing = kwargs | { 'background_rate_Hz' : 3.14159 }
-    TimingTierMessage(**opt_tier_timing)
+    msg = TimingTierMessage(**opt_tier_timing)
+    assert msg.is_binned_time_series() is False
 
 
 #- Optional fields: time bin width.
 @given(**strategy_required_fields_tier_timing)
 def test_snews_message_model_timing_tier_binwidth(**kwargs):
     opt_tier_timing = kwargs | { 'time_bin_width_ns' : 150 }
-    TimingTierMessage(**opt_tier_timing)
+    msg = TimingTierMessage(**opt_tier_timing)
+    assert msg.is_binned_time_series() is True
 
 
 #- Check that negative numbers and floats fail for time bin widths.

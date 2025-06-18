@@ -390,6 +390,12 @@ class TimingTierMessage(TierMessageBase):
         # Model-wide validataion after initiation goes here
         return self
 
+    def is_binned_time_series(self):
+        """Return true if a binned event series is defined (e.g, in KM3NeT or
+        IceCube.
+        """
+        return self.time_bin_width_ns is not None
+
 
 # .................................................................................................
 class SignificanceTierMessage(TierMessageBase):
