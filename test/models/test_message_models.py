@@ -10,6 +10,7 @@ from hypothesis import given
 
 # Local modules
 from snews.data import detectors
+from snews.models.detectors import DetectionChannel
 from snews.models.messages import (CoincidenceTierMessage, HeartbeatMessage,
                                    RetractionMessage, SignificanceTierMessage,
                                    Tier, TimingTierMessage)
@@ -37,6 +38,7 @@ strategy_required_fields_tier = {
 # TimingTier message
 strategy_required_fields_tier_timing = {
     **strategy_required_fields_tier,
+    "start_time_utc": st.deferred(lambda: st.just(datetime.datetime.now(datetime.timezone.utc).isoformat())),
     "timing_series": st.lists(elements=st.integers().map(lambda x: int(x)), min_size=1),
 }
 
@@ -73,9 +75,69 @@ strategy_required_fields_retraction = {
 
 
 # Timing Tier Test
+#- Required fields
 @given(**strategy_required_fields_tier_timing)
 def test_snews_message_model_timing_tier_required(**kwargs):
-    TimingTierMessage(**kwargs)
+    msg = TimingTierMessage(**kwargs)
+    assert msg.is_binned_time_series() is False
+
+
+#- Optional fields: background rate.
+@given(**strategy_required_fields_tier_timing)
+def test_snews_message_model_timing_tier_bkg(**kwargs):
+    opt_tier_timing = kwargs | { 'background_rate_Hz' : 3.14159 }
+    msg = TimingTierMessage(**opt_tier_timing)
+    assert msg.is_binned_time_series() is False
+
+
+#- Optional fields: time bin width.
+@given(**strategy_required_fields_tier_timing)
+def test_snews_message_model_timing_tier_binwidth(**kwargs):
+    opt_tier_timing = kwargs | { 'time_bin_width_ns' : 150 }
+    msg = TimingTierMessage(**opt_tier_timing)
+    assert msg.is_binned_time_series() is True
+
+
+#- Check that negative numbers and floats fail for time bin widths.
+@given(**strategy_required_fields_tier_timing)
+def test_snews_message_model_timing_tier_invalid_bindwidth(**kwargs):
+    with pytest.raises(ValueError) as exc_info:
+        opt_tier_timing = kwargs | { 'time_bin_width_ns' : -150 }
+        TimingTierMessage(**opt_tier_timing)
+    assert "Input should be greater than 0" in str(exc_info.value)
+
+    with pytest.raises(ValueError) as exc_info:
+        opt_tier_timing = kwargs | { 'time_bin_width_ns' : 3.14159 }
+        TimingTierMessage(**opt_tier_timing)
+    assert "Input should be a valid integer, got a number with a fractional part" in str(exc_info.value)
+
+
+#- Optional fields: detection channel.
+@given(**strategy_required_fields_tier_timing)
+def test_snews_message_model_timing_tier_detection_channel(**kwargs):
+    opt_det_ch = kwargs | { 'detection_channel' : 'Electron Neutrino' }
+
+    msg = TimingTierMessage(**opt_det_ch)
+    assert msg.detection_channel == DetectionChannel.NU_E
+
+    msg.detection_channel = 'Electron Antineutrino'
+    assert msg.detection_channel == DetectionChannel.NU_E_BAR
+
+    msg.detection_channel = 'Neutral Current'
+    assert msg.detection_channel == DetectionChannel.NC
+
+    msg.detection_channel = 'Other'
+    assert msg.detection_channel == DetectionChannel.OTHER
+
+
+#- Optional fields: check invalid detection channel.
+@given(**strategy_required_fields_tier_timing)
+def test_snews_message_model_timing_tier_invalid_detection_channel(**kwargs):
+    with pytest.raises(ValueError) as exc_info:
+        opt_det_ch = kwargs | { 'detection_channel' : 'Charged Current' }
+        msg = TimingTierMessage(**opt_det_ch)
+
+    assert "Input should be 'Electron Neutrino', 'Electron Antineutrino', 'Neutral Current' or 'Other'" in str(exc_info.value)
 
 
 @given(**strategy_required_fields_tier_timing)
@@ -83,12 +145,9 @@ def test_snews_message_model_timing_tier_invalid_timing_series(**kwargs):
     #- Empty timing series are not allowed.
     with pytest.raises(ValueError) as exc_info:
         empty_tier_timing = kwargs | { 'timing_series' : [] }
-        print(empty_tier_timing)
         msg = TimingTierMessage(**empty_tier_timing)
 
-    assert "List should have at least 1 item after validation" in str(
-        exc_info.value
-    )
+    assert "List should have at least 1 item after validation" in str(exc_info.value)
 
     #- Setting the timing series to integers is required.
     with pytest.raises(ValueError) as exc_info:

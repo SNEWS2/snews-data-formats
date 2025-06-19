@@ -9,13 +9,14 @@ from uuid import uuid4
 
 # Third-party modules
 import numpy as np
-from pydantic import (BaseModel, ConfigDict, Field, NonNegativeFloat,
-                      NonNegativeInt, ValidationError, field_validator,
-                      model_validator)
+from pydantic import (BaseModel, ConfigDict, Field,
+                      NonNegativeFloat, NonNegativeInt, PositiveInt,
+                      ValidationError, field_validator, model_validator)
 
 # Local modules
 from ..__version__ import schema_version
 from ..data import detectors
+from ..models.detectors import DetectionChannel
 from ..models.timing import PrecisionTimestamp
 
 __all__ = [
@@ -298,10 +299,34 @@ class TimingTierMessage(TierMessageBase):
         description="Time of the first neutrino in the event in ISO 8601-1:2019 format"
     )
 
+    start_time_utc: str = Field(
+        ...,
+        title="Start time (UTC)",
+        description="Base time for event time series or first time bin of the binned histogram of events ISO 8601-1:2019 format"
+    )
+
     timing_series: Annotated[list[int], Len(min_length=1)] = Field(
         ...,
         title="Timing Series",
-        description="Timing series of the event",
+        description="Timing series of the event. If time_bin_width_ns is specified, this represents the binned event counts; else, it represents individual time offsets from start_time_utc, in ns.",
+    )
+
+    time_bin_width_ns: Optional[PositiveInt] = Field(
+        default=None,
+        title="Time Bin Width",
+        description="Bin width of histogrammed event counts, in ns",
+    )
+
+    background_rate_Hz: Optional[NonNegativeFloat] = Field(
+        default=None,
+        title="Background rate",
+        description="Detector background in Hz",
+    )
+
+    detection_channel: Optional[DetectionChannel] = Field(
+        default=None,
+        title="Detection channel",
+        description="Name of the detection channel"
     )
 
     @model_validator(mode="before")
@@ -331,6 +356,28 @@ class TimingTierMessage(TierMessageBase):
 
         return self
 
+    @field_validator("start_time_utc", mode="before")
+    def _validate_start_time_format(cls, v: str):
+        return convert_timestamp_to_ns_precision(v)
+
+    @model_validator(mode="after")
+    def _validate_start_time(self):
+        now = datetime.now(UTC)
+
+        # Cast into ISO 8601-1:2019 format with ns precision
+        start_time_pt = PrecisionTimestamp(timestamp=self.start_time_utc)
+
+        if not self.is_test:
+            # Check newer than 48 hours ago
+            if start_time_pt.to_datetime() < now - timedelta(hours=48):
+                raise ValueError("start_time_utc must be within past 48 hours")
+
+            # Check not in the future
+            if start_time_pt.to_datetime() > now:
+                raise ValueError("start_time_utc must be in the past")
+
+        return self
+
     @field_validator("timing_series")
     def _validate_timing_series(cls, v: List[int]):
         if not all(isinstance(_t, int) for _t in v):
@@ -342,6 +389,12 @@ class TimingTierMessage(TierMessageBase):
     def _validate_model(self):
         # Model-wide validataion after initiation goes here
         return self
+
+    def is_binned_time_series(self):
+        """Return true if a binned event series is defined (e.g, in KM3NeT or
+        IceCube.
+        """
+        return self.time_bin_width_ns is not None
 
 
 # .................................................................................................

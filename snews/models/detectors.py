@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-__all__ = ["Detector", "DetectorType"]
+__all__ = ["Detector", "DetectorType", "DetectionChannel"]
 
 # Standard library modules
 from enum import Enum
@@ -19,6 +19,14 @@ class DetectorType(Enum):
     LIQUID_ARGON = "Liquid Argon"
     BUBBLE_CHAMBER = "Bubble Chamber"
     HIGH_Z = "High-Z"
+    OTHER = "Other"
+
+
+# .................................................................................................
+class DetectionChannel(Enum):
+    NU_E = "Electron Neutrino"
+    NU_E_BAR = "Electron Antineutrino"
+    NC = "Neutral Current"
     OTHER = "Other"
 
 
