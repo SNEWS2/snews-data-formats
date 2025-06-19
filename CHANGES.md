@@ -2,6 +2,7 @@
 
 ## v1.2.0 (unreleased)
 
+* Added a change log to the project (PR https://github.com/SNEWS2/snews-data-formats/pull/22).
 * Added 5 new fields to `TimingTierMessage` (PR https://github.com/SNEWS2/snews-data-formats/pull/20).
 * Force time series to be ints, not ISO time stamps (PR https://github.com/SNEWS2/snews-data-formats/pull/15).
 
