@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "snews-data-formats"
-version = "1.0.0"
+version = "1.0.1"
 description = "A unified collection of SNEWS data, models, and schema"
 authors = ["SNEWS Collaboration <snews2.0@lists.bnl.gov>"]
 maintainers = ["Justin Vasel <justin.vasel@gmail.com>"]
@@ -11,7 +11,7 @@ packages = [{include = "snews"}]
 
 
 [tool.poetry.dependencies]
-python = ">=3.9,<3.13"
+python = "^3.9"
 pydantic = "^2.4.2"
 single-version = "^1.6.0"
 pydantic-extra-types = "^2.1.0"
