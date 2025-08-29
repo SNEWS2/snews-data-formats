@@ -3,6 +3,16 @@
   "schema_author": "Supernova Early Warning System (SNEWS)",
   "schema_version": "0.2",
   "$defs": {
+    "DetectionChannel": {
+      "enum": [
+        "Electron Neutrino",
+        "Electron Antineutrino",
+        "Neutral Current",
+        "Other"
+      ],
+      "title": "DetectionChannel",
+      "type": "string"
+    },
     "Tier": {
       "enum": [
         "Heartbeat",
@@ -36,11 +46,7 @@
       "type": "string"
     },
     "tier": {
-      "allOf": [
-        {
-          "$ref": "#/$defs/Tier"
-        }
-      ],
+      "$ref": "#/$defs/Tier",
       "description": "Message tier",
       "title": "Message Tier"
     },
@@ -112,6 +118,7 @@
     "meta": {
       "anyOf": [
         {
+          "additionalProperties": true,
           "type": "object"
         },
         {
@@ -143,8 +150,8 @@
     "p_val": {
       "anyOf": [
         {
-          "maximum": 1.0,
-          "minimum": 0.0,
+          "maximum": 1,
+          "minimum": 0,
           "type": "number"
         },
         {
@@ -160,26 +167,67 @@
       "title": "Neutrino Time (UTC)",
       "type": "string"
     },
+    "start_time_utc": {
+      "description": "Base time for event time series or first time bin of the binned histogram of events ISO 8601-1:2019 format",
+      "title": "Start time (UTC)",
+      "type": "string"
+    },
     "timing_series": {
-      "description": "Timing series of the event",
+      "description": "Timing series of the event. If time_bin_width_ns is specified, this represents the binned event counts; else, it represents individual time offsets from start_time_utc, in ns.",
       "items": {
-        "anyOf": [
-          {
-            "type": "string"
-          },
-          {
-            "type": "integer"
-          }
-        ]
+        "type": "integer"
       },
+      "minItems": 1,
       "title": "Timing Series",
       "type": "array"
+    },
+    "time_bin_width_ns": {
+      "anyOf": [
+        {
+          "exclusiveMinimum": 0,
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Bin width of histogrammed event counts, in ns",
+      "title": "Time Bin Width"
+    },
+    "background_rate_Hz": {
+      "anyOf": [
+        {
+          "minimum": 0,
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Detector background in Hz",
+      "title": "Background rate"
+    },
+    "detection_channel": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/DetectionChannel"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Name of the detection channel",
+      "title": "Detection channel"
     }
   },
   "required": [
     "tier",
     "detector_name",
     "neutrino_time_utc",
+    "start_time_utc",
     "timing_series"
   ],
   "title": "TimingTierMessage",
