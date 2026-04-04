@@ -452,6 +452,30 @@ class CoincidenceTierMessage(TierMessageBase):
         description="Time of the first neutrino in the event in ISO 8601-1:2019 format"
     )
 
+    detector_names: Optional[List[str]] = Field(
+        default=None,
+        title="Detector Names",
+        description="Names of all detectors in the coincidence"
+    )
+
+    neutrino_times_utc: Optional[List[str]] = Field(
+        default=None,
+        title="Neutrino Times (UTC)",
+        description="Times of the first neutrino for each detector"
+    )
+
+    p_values: Optional[List[NonNegativeFloat]] = Field(
+        default=None,
+        title="p-values",
+        description="p-values of coincidence for each detector"
+    )
+
+    false_alarm_prob: Optional[NonNegativeFloat] = Field(
+        default=None,
+        title="False Alarm Probability",
+        description="Overall false alarm probability"
+    )
+
     @model_validator(mode="before")
     def _set_tier(cls, values):
         values['tier'] = Tier.COINCIDENCE_TIER

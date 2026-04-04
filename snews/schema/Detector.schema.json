@@ -33,11 +33,7 @@
       "type": "string"
     },
     "type": {
-      "allOf": [
-        {
-          "$ref": "#/$defs/DetectorType"
-        }
-      ],
+      "$ref": "#/$defs/DetectorType",
       "description": "Type of detector"
     },
     "experiment": {
@@ -47,19 +43,19 @@
     },
     "mass_kt": {
       "description": "Detector mass",
-      "minimum": 0.0,
+      "minimum": 0,
       "title": "Mass Kt",
       "type": "number"
     },
     "depth_meters": {
       "description": "Detector depth in meters",
-      "minimum": 0.0,
+      "minimum": 0,
       "title": "Depth Meters",
       "type": "number"
     },
     "depth_mwe": {
       "description": "Detector depth in meters-water-equivalent",
-      "minimum": 0.0,
+      "minimum": 0,
       "title": "Depth Mwe",
       "type": "number"
     },
@@ -69,18 +65,34 @@
       "type": "string"
     },
     "latitude": {
+      "anyOf": [
+        {
+          "maximum": 90.0,
+          "minimum": -90.0,
+          "type": "number"
+        },
+        {
+          "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+          "type": "string"
+        }
+      ],
       "description": "Latitude of detector",
-      "maximum": 90.0,
-      "minimum": -90.0,
-      "title": "Latitude",
-      "type": "number"
+      "title": "Latitude"
     },
     "longitude": {
+      "anyOf": [
+        {
+          "maximum": 180.0,
+          "minimum": -180.0,
+          "type": "number"
+        },
+        {
+          "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+          "type": "string"
+        }
+      ],
       "description": "Longitude of detector",
-      "maximum": 180.0,
-      "minimum": -180.0,
-      "title": "Longitude",
-      "type": "number"
+      "title": "Longitude"
     },
     "city": {
       "anyOf": [

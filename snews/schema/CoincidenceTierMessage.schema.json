@@ -36,11 +36,7 @@
       "type": "string"
     },
     "tier": {
-      "allOf": [
-        {
-          "$ref": "#/$defs/Tier"
-        }
-      ],
+      "$ref": "#/$defs/Tier",
       "description": "Message tier",
       "title": "Message Tier"
     },
@@ -112,6 +108,7 @@
     "meta": {
       "anyOf": [
         {
+          "additionalProperties": true,
           "type": "object"
         },
         {
@@ -143,8 +140,8 @@
     "p_val": {
       "anyOf": [
         {
-          "maximum": 1.0,
-          "minimum": 0.0,
+          "maximum": 1,
+          "minimum": 0,
           "type": "number"
         },
         {
@@ -159,6 +156,69 @@
       "description": "Time of the first neutrino in the event in ISO 8601-1:2019 format",
       "title": "Neutrino Time (UTC)",
       "type": "string"
+    },
+    "detector_names": {
+      "anyOf": [
+        {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Names of all detectors in the coincidence",
+      "title": "Detector Names"
+    },
+    "neutrino_times_utc": {
+      "anyOf": [
+        {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Times of the first neutrino for each detector",
+      "title": "Neutrino Times (UTC)"
+    },
+    "p_values": {
+      "anyOf": [
+        {
+          "items": {
+            "minimum": 0,
+            "type": "number"
+          },
+          "type": "array"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "p-values of coincidence for each detector",
+      "title": "p-values"
+    },
+    "false_alarm_prob": {
+      "anyOf": [
+        {
+          "minimum": 0,
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Overall false alarm probability",
+      "title": "False Alarm Probability"
     }
   },
   "required": [

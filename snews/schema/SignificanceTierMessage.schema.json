@@ -36,11 +36,7 @@
       "type": "string"
     },
     "tier": {
-      "allOf": [
-        {
-          "$ref": "#/$defs/Tier"
-        }
-      ],
+      "$ref": "#/$defs/Tier",
       "description": "Message tier",
       "title": "Message Tier"
     },
@@ -112,6 +108,7 @@
     "meta": {
       "anyOf": [
         {
+          "additionalProperties": true,
           "type": "object"
         },
         {
@@ -143,8 +140,8 @@
     "p_val": {
       "anyOf": [
         {
-          "maximum": 1.0,
-          "minimum": 0.0,
+          "maximum": 1,
+          "minimum": 0,
           "type": "number"
         },
         {
@@ -158,7 +155,7 @@
     "p_values": {
       "description": "p-values for the event",
       "items": {
-        "minimum": 0.0,
+        "minimum": 0,
         "type": "number"
       },
       "title": "p-values",
@@ -166,7 +163,7 @@
     },
     "t_bin_width_sec": {
       "description": "Time bin width of the event",
-      "minimum": 0.0,
+      "minimum": 0,
       "title": "Time Bin Width (s)",
       "type": "number"
     }

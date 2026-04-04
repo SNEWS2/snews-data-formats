@@ -36,11 +36,7 @@
       "type": "string"
     },
     "tier": {
-      "allOf": [
-        {
-          "$ref": "#/$defs/Tier"
-        }
-      ],
+      "$ref": "#/$defs/Tier",
       "description": "Message tier",
       "title": "Message Tier"
     },
@@ -112,6 +108,7 @@
     "meta": {
       "anyOf": [
         {
+          "additionalProperties": true,
           "type": "object"
         },
         {
