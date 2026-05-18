@@ -492,13 +492,13 @@ class CoincidenceTierAlert(BaseModel):
     id: str = Field(..., description="Message ID")
     alert_type: str = Field(..., description="Alert type")
     server_tag: str = Field(..., description="Server tag")
-    false_alarm_prob: Union[float, str] = Field(..., alias="False Alarm Prob", description="False alarm probability")
+    false_alarm_prob: Union[float, str] = Field(..., description="False alarm probability")
     detector_names: List[str] = Field(..., description="List of detector names")
     sent_time: str = Field(..., description="Time the alert was sent")
     p_values: List[float] = Field(..., description="List of p-values from detectors")
     neutrino_times: List[str] = Field(..., description="List of neutrino timestamps")
-    p_values_average: float = Field(..., alias="p_values average", description="Average of p-values")
-    sub_list_number: int = Field(..., alias="sub list number", description="Sub list number")
+    p_values_average: float = Field(..., description="Average of p-values")
+    sub_list_number: int = Field(..., description="Sub list number")
 
 
 # .................................................................................................
